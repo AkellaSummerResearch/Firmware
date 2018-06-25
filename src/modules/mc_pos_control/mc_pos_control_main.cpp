@@ -3093,13 +3093,13 @@ MulticopterPositionControl::task_main()
 
 		} else {
 			/* make sure to disable any task when we are not testing them */
-			_flight_tasks.switchTask(FlightTaskIndex::None);
+			//_flight_tasks.switchTask(FlightTaskIndex::None);
 		}
 
+		/* call update in any case to run the MAVLink command handler of the flight task library and allow switching to orbit */
+		_flight_tasks.update();
+
 		if (_test_flight_tasks.get() && _flight_tasks.isAnyTaskActive()) {
-
-			_flight_tasks.update();
-
 			/* Get Flighttask setpoints */
 			vehicle_local_position_setpoint_s setpoint = _flight_tasks.getPositionSetpoint();
 

@@ -47,11 +47,22 @@ FlightTaskOrbit::FlightTaskOrbit()
 
 bool FlightTaskOrbit::applyCommandParameters(const vehicle_command_s &command)
 {
-	const float &r = command.param3; // commanded radius
-	const float &v = command.param4; // commanded velocity
+	// radius field
+	float r = _r;
+	bool clockwise = _v >= 0;
+	if(PX4_ISFINITE(command.param1)) {
+		r = fabsf(command.param1);
+		clockwise = r > 0;
+	}
+
+	// commanded velocity, take sign of radius
+	float v = _v;
+	if(PX4_ISFINITE(command.param2)) {
+		v = fabsf(command.param2) * clockwise ? 1.f : -1.f;
+	}
 
 	if (setRadius(r) && setVelocity(v)) {
-		return FlightTaskManualAltitudeSmooth::applyCommandParameters(command);
+		return true;
 	}
 
 	return false;
